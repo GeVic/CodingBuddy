@@ -322,7 +322,9 @@ export default function Terminal() {
                   className="monoSpace w-full bg-transparent pl-2.5 focus:outline-none focus:ring-0 focus:ring-offset-0"
                   value={input}
                   placeholder={
-                    responses.length < 1 ? "Type what you need..." : undefined
+                    responses.length < 1
+                      ? "Type what you need from your buddy..."
+                      : undefined
                   }
                   onChange={(e) => setInput(e.target.value)}
                 />
