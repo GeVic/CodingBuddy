@@ -132,6 +132,23 @@ const handler = async (req: Request): Promise<Response> => {
     n: 1,
   };
 
+  const payloadWitty: OpenAIStreamPayload = {
+    model: "gpt-3.5-turbo",
+    messages: [
+      {
+        role: "user",
+        content: `I want you to act as a Comdian. I want you to only reply with witty response output inside one unique code block, and nothing else. Do not write explanations. Do not type typed witty response unless. Give me the witty response for the following: ${prompt}`,
+      },
+    ],
+    temperature: 0.6,
+    max_tokens: 100,
+    top_p: 1,
+    frequency_penalty: 0,
+    presence_penalty: 0,
+    stream: true,
+    n: 1,
+  };
+
   const payloadNames: OpenAIStreamPayload = {
     model: "gpt-3.5-turbo",
     messages: [
@@ -151,12 +168,13 @@ const handler = async (req: Request): Promise<Response> => {
 
   const apiPayload: PayloadObject[] = [
     { key: "git", payload: payloadGit },
-    { key: "linux", payload: payloadLinux },
-    { key: "macos", payload: payloadMacOS },
-    { key: "window", payload: payloadWindows },
+    { key: "funny", payload: payloadWitty },
     { key: "format", payload: payloadFormatObject },
     { key: "types", payload: payloadGenType },
     { key: "names", payload: payloadNames },
+    { key: "linux", payload: payloadLinux },
+    { key: "macos", payload: payloadMacOS },
+    { key: "window", payload: payloadWindows },
   ];
 
   const stream = await OpenAIStream(

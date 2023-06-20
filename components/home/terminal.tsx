@@ -30,6 +30,7 @@ export default function Terminal() {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const menuItems: MenuItem[] = [
     { key: "git", name: "Git" },
+    { key: "funny", name: "Funny" },
     { key: "format", name: "Format" },
     { key: "types", name: "Types" },
     { key: "linux", name: "Linux" },
