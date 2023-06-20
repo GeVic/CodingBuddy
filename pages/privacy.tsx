@@ -16,7 +16,7 @@ export default function Privacy() {
               respect your privacy and comply with any applicable law and
               regulation regarding any personal information we may collect about
               you, including across our website,{" "}
-              <a href="https://codingbuddy.com">https://codingbuddy.com</a>, and
+              <a href="https://codingbuddy.dev">https://codingbuddy.dev</a>, and
               other sites we own and operate.{" "}
             </p>
             <p>
@@ -222,7 +222,7 @@ export default function Privacy() {
             <p>
               CodingBuddy
               <br />
-              contact@codingbuddy.com{" "}
+              contact@codingbuddy.dev{" "}
             </p>
           </div>
         </div>

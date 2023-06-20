@@ -41,7 +41,7 @@ export default async function handler(req: NextRequest) {
             position: "absolute",
             top: 0,
             left: 0,
-            backgroundImage: "url(https://www.codingbuddy.com/bg-pattern.svg)",
+            backgroundImage: "url(https://www.codingbuddy.dev/bg-pattern.svg)",
             height: "100%",
             width: "100%",
             zIndex: -2,

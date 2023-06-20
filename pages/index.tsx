@@ -83,7 +83,7 @@ export default function Home() {
           </div>
         ))}
       </div>
-      <CarbonAds />
+      {/* <CarbonAds /> */}
     </Layout>
   );
 }

@@ -1,6 +1,6 @@
 import Head from "next/head";
 
-const DOMAIN = "https://codingbuddy.com";
+const DOMAIN = "https://codingbuddy.dev";
 
 export default function Meta({
   title = "CodingBuddy - The best geeky bud you can find!",

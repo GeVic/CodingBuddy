@@ -1,5 +1,5 @@
-<a href="https://codingbuddy.com">
-  <img alt="CodingBuddy – Your best coding companion" src="https://codingbuddy.com/api/og">
+<a href="https://codingbuddy.dev">
+  <img alt="CodingBuddy – Your best coding companion" src="https://codingbuddy.dev/api/og">
   <h1 align="center">CodingBuddy</h1>
 </a>
 
