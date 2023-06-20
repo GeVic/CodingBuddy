@@ -139,7 +139,7 @@ export default function Terminal() {
                 color="default"
                 css={{
                   tt: "capitalize",
-                  color: "#c1c0b4",
+                  color: "gray",
                   background: "#17181D00",
                   maxHeight: 30,
                 }}
@@ -153,9 +153,20 @@ export default function Terminal() {
                 selectionMode="single"
                 selectedKeys={selected}
                 onSelectionChange={setSelected}
+                css={{
+                  background: "slate",
+                }}
               >
                 {(item: any) => (
-                  <Dropdown.Item key={item.key} color={"secondary"}>
+                  <Dropdown.Item
+                    key={item.key}
+                    color={"default"}
+                    css={{
+                      color: "gray",
+                      fontFamily: "$mono",
+                    }}
+                    className="hover:bg-black-400 focus:bg-black-400 focus:text-white"
+                  >
                     {item.name}
                   </Dropdown.Item>
                 )}
