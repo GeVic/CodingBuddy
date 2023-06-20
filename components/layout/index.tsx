@@ -46,13 +46,13 @@ export default function Layout({
               </p>
             </Link>
 
-            <div>
+            {/* <div>
               <button onClick={scrollToTerminal}>
                 <p className="monoSpace bg-gradient-to-r from-yellow to-amber bg-clip-text text-base text-transparent hover:from-yellow-400 hover:to-amber-400">
                   Get Started
                 </p>
               </button>
-            </div>
+            </div> */}
           </div>
         </header>
 
@@ -70,21 +70,21 @@ export default function Layout({
           </p>
 
           <ul className="order-1 flex flex-wrap items-center text-sm md:order-2">
-            {/* <li>
+            <li>
               <Link href="/privacy" className="mr-4 hover:underline md:mr-6">
                 Privacy Policy
               </Link>
-            </li> */}
-            {/* <li>
+            </li>
+            <li>
               <a
                 className="text-gray transition-all duration-75 hover:opacity-90"
-                href="https://github.com/geovanesantana/CondingBuddy"
+                href="https://github.com/GeVic"
                 target="_blank"
                 rel="noreferrer"
               >
                 <Github className="h-7 w-7" />
               </a>
-            </li> */}
+            </li>
           </ul>
         </div>
       </footer>

@@ -222,7 +222,7 @@ export default function Privacy() {
             <p>
               CodingBuddy
               <br />
-              contact@codingbuddy.dev{" "}
+              admin@codingbuddy.dev{" "}
             </p>
           </div>
         </div>

@@ -21,7 +21,7 @@ export default function Home() {
     <Layout>
       <div className="max-w-3xl px-5 xl:px-0">
         <div className="mx-auto mb-5 flex max-w-fit translate-y-[-1rem] animate-fade-in items-center justify-center space-x-2 overflow-hidden rounded-full border border-light/20 bg-radial-gradient px-5 py-1 opacity-0">
-          <p className="text-sm font-semibold text-gray">
+          <p className="monoSpace bg-gradient-to-r from-yellow to-yellow-400 bg-clip-text text-base text-transparent hover:from-yellow-400 hover:to-amber-400">
             Fast & Easy CodingBuddy
           </p>
         </div>
@@ -36,11 +36,11 @@ export default function Home() {
         </p>
         <div className="mx-auto mt-10 flex items-center justify-center space-x-5">
           <button
-            className="relative flex max-w-fit translate-y-[-1rem] animate-fade-in items-center justify-center rounded-md border border-amber-700 bg-black-600 px-14 py-3 text-sm opacity-0 transition-colors [--animation-delay:300ms] hover:border-amber-600 hover:bg-black-700"
+            className="relative flex max-w-fit translate-y-[-1rem] animate-fade-in items-center justify-center rounded-md border border-yellow-400 bg-black-600 px-14 py-3 text-sm opacity-0 transition-colors [--animation-delay:300ms] hover:border-yellow-400 hover:bg-black-700"
             onClick={scrollToTerminal}
           >
-            <p className="monoSpace bg-gradient-to-r from-yellow to-amber bg-clip-text text-base text-transparent hover:from-yellow-400 hover:to-amber-400">
-              Get Started
+            <p className="monoSpace bg-gradient-to-r from-yellow to-yellow-400 bg-clip-text text-base text-transparent hover:from-yellow-400 hover:to-amber-400">
+              npm start
             </p>
           </button>
         </div>

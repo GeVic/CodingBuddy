@@ -28,8 +28,8 @@ module.exports = {
         "amber-400": "#FFB677",
         "amber-600": "#c18d35",
         "amber-700": "#A07731",
-        yellow: "#f2b132",
-        "yellow-400": "#F4C15F",
+        yellow: "#AEFA91",
+        "yellow-400": "#EA9AFB",
       },
       fontFamily: {
         display: ["var(--font-sf)", "system-ui", "sans-serif"],
