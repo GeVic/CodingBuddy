@@ -38,7 +38,7 @@ export default function Terminal() {
     { key: "window", name: "Windows" },
     { key: "names", name: "Naming" },
   ];
-  const [selected, setSelected] = useState(new Set([menuItems[0].name]));
+  const [selected, setSelected] = useState<any>(new Set([menuItems[0].name]));
 
   const selectedValue = useMemo(
     () => Array.from(selected).join(", ").replaceAll("_", " "),
