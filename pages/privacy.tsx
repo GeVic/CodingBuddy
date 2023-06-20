@@ -1,5 +1,5 @@
-import Layout from "@/components/layout";
 import Balancer from "react-wrap-balancer";
+import Layout from "@/components/layout";
 
 export default function Privacy() {
   return (
@@ -12,11 +12,11 @@ export default function Privacy() {
         <div className="relative translate-y-[-1rem] animate-fade-in px-4 opacity-0 [--animation-delay:200ms] sm:px-6 lg:px-8 ">
           <div className="font-base prose-base mx-auto max-w-[40rem] leading-normal text-gray">
             <p>
-              Your privacy is important to us. It is GitFluence&#39;s policy to
+              Your privacy is important to us. It is CodingBuddy&#39;s policy to
               respect your privacy and comply with any applicable law and
               regulation regarding any personal information we may collect about
               you, including across our website,{" "}
-              <a href="https://gitfluence.com">https://gitfluence.com</a>, and
+              <a href="https://codingbuddy.com">https://codingbuddy.com</a>, and
               other sites we own and operate.{" "}
             </p>
             <p>
@@ -220,9 +220,9 @@ export default function Privacy() {
               contact us using the following details:{" "}
             </p>
             <p>
-              GitFluence
+              CodingBuddy
               <br />
-              contact@gitfluence.com{" "}
+              contact@codingbuddy.com{" "}
             </p>
           </div>
         </div>

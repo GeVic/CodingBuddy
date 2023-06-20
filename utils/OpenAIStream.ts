@@ -1,7 +1,7 @@
 import {
-  createParser,
   ParsedEvent,
   ReconnectInterval,
+  createParser,
 } from "eventsource-parser";
 
 export type ChatGPTAgent = "user" | "system";
@@ -23,7 +23,20 @@ export interface OpenAIStreamPayload {
   n: number;
 }
 
-export async function OpenAIStream(payload: OpenAIStreamPayload) {
+export type PayloadObject = {
+  key: string;
+  payload: OpenAIStreamPayload; // Replace 'any' with the actual type of your payloads
+};
+
+export type MenuItem = {
+  key: string;
+  name: string;
+};
+
+export async function OpenAIStream(
+  payload: OpenAIStreamPayload,
+  selected: string,
+) {
   const encoder = new TextEncoder();
   const decoder = new TextDecoder();
 
@@ -51,11 +64,14 @@ export async function OpenAIStream(payload: OpenAIStreamPayload) {
           }
           try {
             const json = JSON.parse(data);
-            const text = json.choices[0].delta?.content || "";
-            if (counter < 2 && (text.match(/\n/) || []).length) {
-              // this is a prefix character (i.e., "\n\n"), do nothing
-              return;
-            }
+            const text = (json.choices[0].delta?.content || "").replace(
+              /^\n/,
+              "",
+            );
+            // if (counter < 2 && (text.match(/\n/) || []).length) {
+            //   // this is a prefix character (i.e., "\n\n"), do nothing
+            //   return;
+            // }
             const queue = encoder.encode(text);
             controller.enqueue(queue);
             counter++;

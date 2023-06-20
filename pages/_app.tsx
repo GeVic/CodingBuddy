@@ -1,15 +1,21 @@
 import "@/styles/globals.css";
-import type { AppProps } from "next/app";
+
 import { Analytics } from "@vercel/analytics/react";
+import type { AppProps } from "next/app";
+import GoogleAnalytics from "@/components/shared/googleAnalytics";
+import { Inter } from "@next/font/google";
 import { Provider as RWBProvider } from "react-wrap-balancer";
 import cx from "classnames";
 import localFont from "@next/font/local";
-import { Inter } from "@next/font/google";
-import GoogleAnalytics from "@/components/shared/googleAnalytics";
 
 const sfPro = localFont({
   src: "../styles/SF-Pro-Display-Medium.otf",
   variable: "--font-sf",
+});
+
+const monoSpace = localFont({
+  src: "../styles/SpaceMono-Regular.ttf",
+  variable: "--font-ms",
 });
 
 const inter = Inter({
@@ -21,7 +27,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
   return (
     <>
       <RWBProvider>
-        <div className={cx(sfPro.variable, inter.variable)}>
+        <div className={cx(sfPro.variable, inter.variable, monoSpace.variable)}>
           <Component {...pageProps} />
         </div>
       </RWBProvider>

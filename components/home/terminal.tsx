@@ -1,11 +1,15 @@
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+
 import { Copy } from "@/components/shared/icons";
+import { Dropdown } from "@nextui-org/react";
+import { MenuItem } from "utils/OpenAIStream";
 import classNames from "classnames";
-import { useEffect, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 
 interface Response {
   type: string;
   content: string;
+  id: string;
 }
 
 const responseType = {
@@ -24,6 +28,21 @@ export default function Terminal() {
   const [loading, setLoading] = useState(false);
   const [responses, setResponses] = useState<Response[]>([]);
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const menuItems: MenuItem[] = [
+    { key: "git", name: "Git" },
+    { key: "format", name: "Format" },
+    { key: "types", name: "Types" },
+    { key: "linux", name: "Linux" },
+    { key: "macos", name: "macOS" },
+    { key: "window", name: "Windows" },
+    { key: "names", name: "Naming" },
+  ];
+  const [selected, setSelected] = useState(new Set([menuItems[0].name]));
+
+  const selectedValue = useMemo(
+    () => Array.from(selected).join(", ").replaceAll("_", " "),
+    [selected],
+  );
 
   useEffect(() => {
     setInputFocus();
@@ -36,13 +55,15 @@ export default function Terminal() {
   };
 
   const generateCommand = async () => {
+    const currentSelectedValue = selectedValue;
     setLoading(true);
     setResponses((prev) => {
       return [
         ...prev,
         {
           type: responseType.question,
-          content: input,
+          content: "\n" + input,
+          id: currentSelectedValue.toLowerCase(),
         },
       ];
     });
@@ -55,6 +76,7 @@ export default function Terminal() {
       },
       body: JSON.stringify({
         prompt: input,
+        selected: currentSelectedValue.toLowerCase(),
       }),
     });
 
@@ -82,6 +104,7 @@ export default function Terminal() {
         {
           type: responseType.answer,
           content: removeMarkdown(resultData),
+          id: currentSelectedValue.toLowerCase(),
         },
       ];
     });
@@ -100,7 +123,7 @@ export default function Terminal() {
     <div className="relative z-10 mx-5 translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:200ms] xl:mx-0">
       <div
         className={classNames(
-          "relative z-10 m-auto w-full max-w-[993px] overflow-hidden rounded-lg border border-light/5 font-mono leading-normal subpixel-antialiased shadow-3xl xl:px-0",
+          "relative z-10 m-auto w-full overflow-hidden rounded-lg border border-light/5 font-mono leading-normal subpixel-antialiased shadow-3xl xl:px-0",
         )}
       >
         <div className="relative flex h-6 w-full items-center justify-center space-x-2 border-b border-slate bg-slate p-4">
@@ -108,6 +131,36 @@ export default function Terminal() {
             <div className="h-3 w-3 rounded-full bg-red-500"></div>
             <div className="ml-2 h-3 w-3 rounded-full bg-orange-300"></div>
             <div className="ml-2 h-3 w-3 rounded-full bg-green-500"></div>
+          </div>
+          <div className="group absolute right-3 flex">
+            <Dropdown disableAnimation>
+              <Dropdown.Button
+                flat
+                color="default"
+                css={{
+                  tt: "capitalize",
+                  color: "#c1c0b4",
+                  background: "#17181D00",
+                  maxHeight: 30,
+                }}
+              >
+                {selectedValue}
+              </Dropdown.Button>
+              <Dropdown.Menu
+                aria-label="Dynamic Actions"
+                items={menuItems}
+                disallowEmptySelection
+                selectionMode="single"
+                selectedKeys={selected}
+                onSelectionChange={setSelected}
+              >
+                {(item: any) => (
+                  <Dropdown.Item key={item.key} color={"secondary"}>
+                    {item.name}
+                  </Dropdown.Item>
+                )}
+              </Dropdown.Menu>
+            </Dropdown>
           </div>
         </div>
 
@@ -133,54 +186,108 @@ export default function Terminal() {
                   </span>
                 ) : item.type === responseType.answer ? (
                   <div className="inline-block">
-                    <span className="text-gray">{"> "}</span>
-                    {item.content}
-
-                    {item.content.length > 0 &&
-                      !item.content.includes("💬") &&
-                      !item.content.includes("🚨") && (
-                        <button
-                          className="ml-2 rounded-md bg-slate px-2 py-2 transition-all duration-75 ease-in hover:bg-black-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray"
-                          onClick={() => {
-                            navigator.clipboard.writeText(item.content);
-                            toast("Git command copied to clipboard.", {
-                              icon: (
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  className="h-4 w-4 stroke-2 text-[#4db682]"
-                                  width="24"
-                                  height="24"
-                                  viewBox="0 0 24 24"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  strokeWidth="2"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                >
-                                  <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path>
-                                  <path d="m9 12 2 2 4-4"></path>
-                                </svg>
-                              ),
-                              style: {
-                                height: 38,
-                                borderRadius: 4,
-                                border: "1px solid #515151",
-                                padding: "16px 12px",
-                                color: "#fffef1",
-                                background: "#343333",
-                                fontSize: 12,
-                                letterSpacing: "0.3px",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyItems: "center",
-                                margin: 0,
-                              },
-                            });
-                          }}
-                        >
-                          <Copy className="h-4 w-4 stroke-2 text-light" />
-                        </button>
-                      )}
+                    {item.id === "format" || item.id === "types" ? (
+                      <pre className="monoSpace mb-2 border border-gray bg-black p-3 text-gray">
+                        {item.content.length > 0 &&
+                          !item.content.includes("💬") &&
+                          !item.content.includes("🚨") && (
+                            <button
+                              className="ml-2 flex items-center rounded-md bg-slate px-2 py-2 transition-all duration-75 ease-in hover:bg-black-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray"
+                              onClick={() => {
+                                navigator.clipboard.writeText(item.content);
+                                toast("Git command copied to clipboard.", {
+                                  icon: (
+                                    <svg
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      className="h-4 w-4 stroke-2 text-[#4db682]"
+                                      width="24"
+                                      height="24"
+                                      viewBox="0 0 24 24"
+                                      fill="none"
+                                      stroke="currentColor"
+                                      strokeWidth="2"
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                    >
+                                      <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path>
+                                      <path d="m9 12 2 2 4-4"></path>
+                                    </svg>
+                                  ),
+                                  style: {
+                                    height: 38,
+                                    borderRadius: 4,
+                                    border: "1px solid #515151",
+                                    padding: "16px 12px",
+                                    color: "#fffef1",
+                                    background: "#343333",
+                                    fontSize: 12,
+                                    letterSpacing: "0.3px",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyItems: "center",
+                                    margin: 0,
+                                  },
+                                });
+                              }}
+                            >
+                              <Copy className="h-4 w-4 stroke-2 text-light" />
+                              <span className="monoSpace"> copy</span>
+                            </button>
+                          )}
+                        <br />
+                        {item.content}
+                      </pre>
+                    ) : (
+                      <>
+                        <span className="monoSpace text-gray">{"> "}</span>
+                        {item.content}
+                        {item.content.length > 0 &&
+                          !item.content.includes("💬") &&
+                          !item.content.includes("🚨") && (
+                            <button
+                              className="ml-2 rounded-md bg-slate px-2 py-2 transition-all duration-75 ease-in hover:bg-black-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray"
+                              onClick={() => {
+                                navigator.clipboard.writeText(item.content);
+                                toast("Git command copied to clipboard.", {
+                                  icon: (
+                                    <svg
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      className="h-4 w-4 stroke-2 text-[#4db682]"
+                                      width="24"
+                                      height="24"
+                                      viewBox="0 0 24 24"
+                                      fill="none"
+                                      stroke="currentColor"
+                                      strokeWidth="2"
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                    >
+                                      <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path>
+                                      <path d="m9 12 2 2 4-4"></path>
+                                    </svg>
+                                  ),
+                                  style: {
+                                    height: 38,
+                                    borderRadius: 4,
+                                    border: "1px solid #515151",
+                                    padding: "16px 12px",
+                                    color: "#fffef1",
+                                    background: "#343333",
+                                    fontSize: 12,
+                                    letterSpacing: "0.3px",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyItems: "center",
+                                    margin: 0,
+                                  },
+                                });
+                              }}
+                            >
+                              <Copy className="h-4 w-4 stroke-2 text-light" />
+                            </button>
+                          )}
+                      </>
+                    )}
                   </div>
                 ) : null}
               </div>
@@ -200,7 +307,7 @@ export default function Terminal() {
               >
                 <input
                   ref={inputRef}
-                  className="w-full bg-transparent pl-2.5 focus:outline-none focus:ring-0 focus:ring-offset-0"
+                  className="monoSpace w-full bg-transparent pl-2.5 focus:outline-none focus:ring-0 focus:ring-offset-0"
                   value={input}
                   placeholder={
                     responses.length < 1 ? "Type what you need..." : undefined

@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { ChevronDown } from "lucide-react";
 import Popover from "@/components/shared/popover";
 import Tooltip from "@/components/shared/tooltip";
-import { ChevronDown } from "lucide-react";
+import { useState } from "react";
 
 export default function ComponentGrid() {
   const [openPopover, setOpenPopover] = useState(false);
@@ -39,7 +39,7 @@ export default function ComponentGrid() {
           />
         </button>
       </Popover>
-      <Tooltip content="GitFluence is an opinionated collection of components, hooks, and utilities for your Next.js project.">
+      <Tooltip content="CodingBuddy is an opinionated collection of components, hooks, and utilities for your Next.js project.">
         <div className="border-gray-300 hover:border-gray-800 active:bg-gray-100 flex w-40 cursor-default items-center justify-center rounded-md border px-3 py-2 transition-all duration-75 focus:outline-none">
           <p className="text-gray-600">Tooltip</p>
         </div>

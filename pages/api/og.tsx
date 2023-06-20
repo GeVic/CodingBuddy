@@ -41,7 +41,7 @@ export default async function handler(req: NextRequest) {
             position: "absolute",
             top: 0,
             left: 0,
-            backgroundImage: "url(https://www.gitfluence.com/bg-pattern.svg)",
+            backgroundImage: "url(https://www.codingbuddy.com/bg-pattern.svg)",
             height: "100%",
             width: "100%",
             zIndex: -2,
@@ -53,7 +53,7 @@ export default async function handler(req: NextRequest) {
             "../../public/logo-white.png",
             import.meta.url,
           ).toString()}
-          alt="GitFluence Logo"
+          alt="CodingBuddy Logo"
           tw="mb-4 opacity-95"
         />
       </div>

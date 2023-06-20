@@ -4,6 +4,11 @@
 
 @layer base {
   body {
-    background-color: #17181d;
+    background-color: #000000;
   }
+}
+
+.monoSpace {
+  font-family: var(--font-ms);
+  /* For SF-Pro-Display-Medium.otf */
 }

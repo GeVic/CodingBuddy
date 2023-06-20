@@ -1,11 +1,7 @@
-<a href="https://gitfluence.com">
-  <img alt="GitFluence – Generate the git commands using ChatGPT" src="https://gitfluence.com/api/og">
-  <h1 align="center">GitFluence</h1>
+<a href="https://codingbuddy.com">
+  <img alt="CodingBuddy – Your best coding companion" src="https://codingbuddy.com/api/og">
+  <h1 align="center">CodingBuddy</h1>
 </a>
-
-<p align="center">
-  Generate the git commands using ChatGPT
-</p>
 
 <p align="center">
   <a href="#introduction"><strong>Introduction</strong></a> ·
@@ -15,7 +11,7 @@
 
 ## Introduction
 
-GitFluence is an AI-driven solution that helps you quickly find the right command. Get started with Git Command Generator today and save time.
+CodingBuddy is an AI-driven solution that helps you quickly find the right solution for most of your coding needs without opening multiple pages.
 
 ## Tech Stack + Features
 

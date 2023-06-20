@@ -1,5 +1,6 @@
-import Script from "next/script";
 import { useEffect, useRef } from "react";
+
+import Script from "next/script";
 
 const carbonStyle = `
   #carbonads {
@@ -91,7 +92,7 @@ export default function CarbonAds() {
 
     const script = document.createElement("script");
     script.id = "_carbonads_js";
-    script.src = `//cdn.carbonads.com/carbon.js?serve=CWYDC53J&placement=gitfluencecom'`;
+    script.src = `//cdn.carbonads.com/carbon.js?serve=CWYDC53J&placement=codingbuddycom'`;
     containerRef.current?.appendChild(script);
   }, []);
 

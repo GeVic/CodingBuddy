@@ -1,10 +1,10 @@
 import Head from "next/head";
 
-const DOMAIN = "https://gitfluence.com";
+const DOMAIN = "https://codingbuddy.com";
 
 export default function Meta({
-  title = "GitFluence - Find the Git Command You Need Now!",
-  description = "GitFluence is AI-driven solution that helps you quickly find the right command. Get started with Git Command Generator today and save time.",
+  title = "CodingBuddy - The best geeky bud you can find!",
+  description = "CodingBuddy is AI-driven solution that helps you code quickly. Get started with CodingBuddy today and save time.",
   image = `${DOMAIN}/api/og`,
 }: {
   title?: string;

@@ -1,6 +1,6 @@
 {
-  "name": "gitfluence",
-  "version": "0.1.0",
+  "name": "codingBuddy",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@next/font": "13.1.1",
+    "@nextui-org/react": "^1.0.0-beta.13",
     "@radix-ui/react-popover": "^1.0.2",
     "@radix-ui/react-tooltip": "^1.0.2",
     "@types/node": "18.11.18",
@@ -29,6 +30,7 @@
     "ms": "^2.1.3",
     "next": "13.1.1",
     "react": "18.2.0",
+    "react-aria": "^3.25.0",
     "react-dom": "18.2.0",
     "react-hot-toast": "^2.4.0",
     "react-intersection-observer": "^9.4.2",

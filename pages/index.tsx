@@ -1,11 +1,12 @@
-import Terminal from "@/components/home/terminal";
-import Layout from "@/components/layout";
-import CarbonAds from "@/components/shared/carbonAds";
 import { Copy, Keyboard, Prompt } from "@/components/shared/icons";
+
+import Balancer from "react-wrap-balancer";
+import CarbonAds from "@/components/shared/carbonAds";
+import Layout from "@/components/layout";
+import Terminal from "@/components/home/terminal";
+import { Toaster } from "react-hot-toast";
 import classNames from "classnames";
 import { useRef } from "react";
-import { Toaster } from "react-hot-toast";
-import Balancer from "react-wrap-balancer";
 
 export default function Home() {
   const terminalRef = useRef<null | HTMLDivElement>(null);
@@ -21,16 +22,16 @@ export default function Home() {
       <div className="max-w-3xl px-5 xl:px-0">
         <div className="mx-auto mb-5 flex max-w-fit translate-y-[-1rem] animate-fade-in items-center justify-center space-x-2 overflow-hidden rounded-full border border-light/20 bg-radial-gradient px-5 py-1 opacity-0">
           <p className="text-sm font-semibold text-gray">
-            Fast & Easy Git Command Generator
+            Fast & Easy CodingBuddy
           </p>
         </div>
-        <h1 className="translate-y-[-1rem] animate-fade-in bg-gradient-to-br from-light to-stone-300 bg-clip-text text-center font-display text-4xl font-bold text-transparent opacity-0 drop-shadow-sm [--animation-delay:100ms] md:text-7xl md:leading-[5rem]">
-          <Balancer>Find the Git Command You Need Now!</Balancer>
+        <h1 className="monoSpace translate-y-[-1rem] animate-fade-in bg-gradient-to-br from-light to-stone-300 bg-clip-text text-center font-display text-4xl font-bold text-transparent opacity-0 drop-shadow-sm [--animation-delay:100ms] md:text-7xl md:leading-[5rem]">
+          <Balancer>Your best coding buddy!</Balancer>
         </h1>
-        <p className="mt-6 translate-y-[-1rem] animate-fade-in text-center text-gray opacity-0 [--animation-delay:200ms] md:text-xl">
+        <p className="monoSpace mt-6 translate-y-[-1rem] animate-fade-in text-center text-gray opacity-0 [--animation-delay:200ms] md:text-xl">
           <Balancer>
-            The AI-driven solution that helps you quickly find the right
-            command. Get started with Git Command Generator today and save time.
+            An AI-driven solution that helps you code quickly. Get started with
+            CodingBuddy today and save time.
           </Balancer>
         </p>
         <div className="mx-auto mt-10 flex items-center justify-center space-x-5">
@@ -38,7 +39,7 @@ export default function Home() {
             className="relative flex max-w-fit translate-y-[-1rem] animate-fade-in items-center justify-center rounded-md border border-amber-700 bg-black-600 px-14 py-3 text-sm opacity-0 transition-colors [--animation-delay:300ms] hover:border-amber-600 hover:bg-black-700"
             onClick={scrollToTerminal}
           >
-            <p className="bg-gradient-to-r from-yellow to-amber bg-clip-text text-base text-transparent hover:from-yellow-400 hover:to-amber-400">
+            <p className="monoSpace bg-gradient-to-r from-yellow to-amber bg-clip-text text-base text-transparent hover:from-yellow-400 hover:to-amber-400">
               Get Started
             </p>
           </button>
@@ -53,7 +54,7 @@ export default function Home() {
         <Toaster
           position="bottom-right"
           reverseOrder={false}
-          toastOptions={{ duration: 2000 }}
+          toastOptions={{ duration: 1000 }}
         />
 
         <Terminal />
@@ -61,14 +62,12 @@ export default function Home() {
         <div className="absolute -bottom-44 -left-12 right-0 h-full w-full max-w-screen-xl rounded-[1000px] bg-feature-pattern opacity-10 blur-[160px] xl:h-[278px] xl:w-[748px] xl:opacity-30" />
       </div>
 
-      <CarbonAds />
-
       <div className="my-10 grid w-full max-w-screen-xl animate-[slide-down-fade_0.5s_ease-in-out] grid-cols-1 gap-12 px-5 md:grid-cols-3 xl:w-8/12 xl:gap-12 xl:px-0">
         {steps.map(({ icon, title, description }, index) => (
           <div
             key={title}
             className={classNames(
-              "mx-auto max-w-md bg-gradient-to-br text-center",
+              "monoSpace mx-auto max-w-md bg-gradient-to-br text-center",
               `translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:${
                 index + 1
               }00ms]`,
@@ -84,6 +83,7 @@ export default function Home() {
           </div>
         ))}
       </div>
+      <CarbonAds />
     </Layout>
   );
 }
@@ -91,20 +91,20 @@ export default function Home() {
 const steps = [
   {
     icon: <Keyboard className="h-8 w-8 text-yellow" />,
-    title: "Describe the command",
+    title: "Choose the buddy",
     description:
-      "Start by entering a description of what you want to accomplish with git into the web app's input field. ",
+      "Start by choosing the right tool for your need. Prompts is out job. ",
   },
   {
     icon: <Prompt className="h-8 w-8 text-yellow" />,
-    title: "Receive suggestions",
+    title: "Describe the command",
     description:
-      "Based on your description, the GitFluence will use its AI-driven solution to suggest the more relevant git commands.",
+      "Based on your description, the CodingBuddy will suggest the more relevant answers.",
   },
   {
     icon: <Copy className="h-8 w-8 text-yellow" />,
-    title: "Copy the command",
+    title: "Copy",
     description:
-      "Now you can copy it and paste it into your terminal or command line interface.",
+      "Now you can copy the solution as per your need. Hassle-free, think-free tool.",
   },
 ];
