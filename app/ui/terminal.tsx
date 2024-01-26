@@ -1,10 +1,9 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
-import { Copy } from "@/components/shared/icons";
 import { Dropdown } from "@nextui-org/react";
-import { MenuItem } from "utils/OpenAIStream";
-import classNames from "classnames";
 import { toast } from "react-hot-toast";
+import { Copy } from "@/app/ui/components/shared/icons";
+import { MenuItem } from "../lib/definition";
 
 interface Response {
   type: string;
@@ -49,6 +48,29 @@ export default function Terminal() {
     setInputFocus();
   }, []);
 
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      // calling read api from backend every 30s
+      try {
+        const response = await fetch(`http://localhost:3005/query`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        const data = await response.json();
+        console.log(`result `, data);
+      } catch (error) {
+        console.log(`Error: ${error}`);
+      }
+    }, 60000); // 60s interval
+
+    if (interval) {
+      return () => clearInterval(interval);
+    }
+  }, []);
+
   const setInputFocus = () => {
     if (inputRef.current) {
       inputRef.current.focus();
@@ -70,7 +92,7 @@ export default function Terminal() {
     });
     setInput("");
 
-    const response = await fetch("/api/generate", {
+    const response = await fetch("api/generate", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -83,6 +105,7 @@ export default function Terminal() {
 
     // This data is a ReadableStream
     const data = response.body;
+    console.log(`This test `, data);
     if (!data) {
       return;
     }
@@ -98,6 +121,27 @@ export default function Terminal() {
       const chunkValue = decoder.decode(value);
       resultData += chunkValue;
     }
+    const latestValue = Array.from(selected).pop();
+
+    // these are the two values we care about
+    console.log(`Selected `, latestValue);
+    console.log(`Result data `, removeMarkdown(resultData));
+
+    // trying to post to our backend
+    /* try {
+      const response = await fetch("http://localhost:3005/query", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          key: (latestValue as string).toLowerCase(),
+          value: removeMarkdown(resultData).toLowerCase(),
+        }),
+      });
+    } catch (error) {
+      console.log(`Error: ${error}`);
+    } */
 
     setResponses((prev) => {
       return [
@@ -122,11 +166,7 @@ export default function Terminal() {
 
   return (
     <div className="relative z-10 mx-5 translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:200ms] xl:mx-0">
-      <div
-        className={classNames(
-          "relative z-10 m-auto w-full overflow-hidden rounded-lg border border-light/5 font-mono leading-normal subpixel-antialiased shadow-3xl xl:px-0",
-        )}
-      >
+      <div className="relative z-10 m-auto w-full overflow-hidden rounded-lg border border-light/5 font-mono leading-normal subpixel-antialiased shadow-3xl xl:px-0">
         <div className="relative flex h-6 w-full items-center justify-center space-x-2 border-b border-slate bg-slate p-4">
           <div className="group absolute left-3 flex flex-1 space-x-2 justify-self-start">
             <div className="h-3 w-3 rounded-full bg-red-500"></div>

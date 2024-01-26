@@ -1,8 +1,5 @@
-import {
-  OpenAIStream,
-  OpenAIStreamPayload,
-  PayloadObject,
-} from "../../utils/OpenAIStream";
+import { OpenAIStreamPayload, PayloadObject } from "@/app/lib/definition";
+import { OpenAIStream } from "@/app/lib/utils";
 
 export const config = {
   runtime: "edge",

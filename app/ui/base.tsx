@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { ReactNode, useEffect } from "react";
 
-import { Github } from "@/components/shared/icons";
+import { Github } from "@/app/ui/components/shared/icons";
 import Link from "next/link";
-import Meta from "./meta";
+import Meta from "../lib/meta";
 
-export default function Layout({
+export default function Base({
   meta,
   children,
 }: {
@@ -45,14 +45,6 @@ export default function Layout({
                 CodingBuddy
               </p>
             </Link>
-
-            {/* <div>
-              <button onClick={scrollToTerminal}>
-                <p className="monoSpace bg-gradient-to-r from-yellow to-amber bg-clip-text text-base text-transparent hover:from-yellow-400 hover:to-amber-400">
-                  Get Started
-                </p>
-              </button>
-            </div> */}
           </div>
         </header>
 

@@ -1,14 +1,14 @@
-import { Copy, Keyboard, Prompt } from "@/components/shared/icons";
+"use client";
 
-import Balancer from "react-wrap-balancer";
-import CarbonAds from "@/components/shared/carbonAds";
-import Layout from "@/components/layout";
-import Terminal from "@/components/home/terminal";
-import { Toaster } from "react-hot-toast";
+import { Copy, Keyboard, Prompt } from "@/app/ui/components/shared/icons";
 import classNames from "classnames";
 import { useRef } from "react";
+import { Toaster } from "react-hot-toast";
+import Balancer from "react-wrap-balancer";
+import Terminal from "./ui/terminal";
 
-export default function Home() {
+export default function Page() {
+  // Home
   const terminalRef = useRef<null | HTMLDivElement>(null);
 
   const scrollToTerminal = () => {
@@ -18,7 +18,7 @@ export default function Home() {
   };
 
   return (
-    <Layout>
+    <>
       <div className="max-w-3xl px-5 xl:px-0">
         <div className="mx-auto mb-5 flex max-w-fit translate-y-[-1rem] animate-fade-in items-center justify-center space-x-2 overflow-hidden rounded-full border border-light/20 bg-radial-gradient px-5 py-1 opacity-0">
           <p className="monoSpace bg-gradient-to-r from-yellow to-yellow-400 bg-clip-text text-base text-transparent hover:from-yellow-400 hover:to-amber-400">
@@ -83,8 +83,7 @@ export default function Home() {
           </div>
         ))}
       </div>
-      {/* <CarbonAds /> */}
-    </Layout>
+    </>
   );
 }
 

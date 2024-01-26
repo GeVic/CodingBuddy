@@ -1,9 +1,8 @@
 import Balancer from "react-wrap-balancer";
-import Layout from "@/components/layout";
 
 export default function Privacy() {
   return (
-    <Layout>
+    <>
       <div className="relative mx-auto">
         <h1 className="translate-y-[-1rem] animate-fade-in bg-gradient-to-br from-light to-stone-300 bg-clip-text pb-14 text-center font-display text-4xl font-bold text-transparent opacity-0 drop-shadow-sm [--animation-delay:100ms] sm:text-5xl md:text-6xl md:leading-[5rem]">
           <Balancer>Privacy policy</Balancer>
@@ -227,6 +226,6 @@ export default function Privacy() {
           </div>
         </div>
       </div>
-    </Layout>
+    </>
   );
 }

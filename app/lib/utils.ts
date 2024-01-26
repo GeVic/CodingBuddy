@@ -3,34 +3,16 @@ import {
   ReconnectInterval,
   createParser,
 } from "eventsource-parser";
+import { OpenAIStreamPayload } from "./definition";
 
-export type ChatGPTAgent = "user" | "system";
-
-export interface ChatGPTMessage {
-  role: ChatGPTAgent;
-  content: string;
+export function capitalize(str: string) {
+  if (!str || typeof str !== "string") return str;
+  return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-export interface OpenAIStreamPayload {
-  model: string;
-  messages: ChatGPTMessage[];
-  temperature: number;
-  top_p: number;
-  frequency_penalty: number;
-  presence_penalty: number;
-  max_tokens: number;
-  stream: boolean;
-  n: number;
-}
-
-export type PayloadObject = {
-  key: string;
-  payload: OpenAIStreamPayload; // Replace 'any' with the actual type of your payloads
-};
-
-export type MenuItem = {
-  key: string;
-  name: string;
+export const truncate = (str: string, length: number) => {
+  if (!str || str.length <= length) return str;
+  return `${str.slice(0, length)}...`;
 };
 
 export async function OpenAIStream(
