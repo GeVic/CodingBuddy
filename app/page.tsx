@@ -47,7 +47,7 @@ export default function Page() {
       </div>
 
       <div
-        className="relative w-full max-w-screen-xl -scroll-mt-10 pt-20 pb-8 xl:w-8/12 xl:-scroll-mt-16 xl:pt-36"
+        className="relative w-full max-w-screen-xl -scroll-mt-10 pt-20 xl:w-8/12 xl:-scroll-mt-16 xl:pt-36"
         id="terminal"
         ref={terminalRef}
       >

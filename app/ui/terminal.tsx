@@ -4,6 +4,8 @@ import { Dropdown } from "@nextui-org/react";
 import { toast } from "react-hot-toast";
 import { Copy } from "@/app/ui/components/shared/icons";
 import { MenuItem } from "../lib/definition";
+import { structurePayload } from "../lib/utils";
+import styles from "@/app/ui/home.module.css";
 
 interface Response {
   type: string;
@@ -26,6 +28,8 @@ export default function Terminal() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [responses, setResponses] = useState<Response[]>([]);
+  const [popular, setPopular] = useState<string>("");
+  const [textLength, setTextLength] = useState(0);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const menuItems: MenuItem[] = [
     { key: "git", name: "Git" },
@@ -49,6 +53,12 @@ export default function Terminal() {
   }, []);
 
   useEffect(() => {
+    if (popular && popular.length > 0) {
+      setTextLength(popular.length);
+    }
+  }, [popular]);
+
+  useEffect(() => {
     const interval = setInterval(async () => {
       // calling read api from backend every 30s
       try {
@@ -58,13 +68,13 @@ export default function Terminal() {
             "Content-Type": "application/json",
           },
         });
-
         const data = await response.json();
-        console.log(`result `, data);
+        setPopular(data.key);
+        console.log(`Set is complete`, data.key);
       } catch (error) {
         console.log(`Error: ${error}`);
       }
-    }, 60000); // 60s interval
+    }, 6000); // 60s interval
 
     if (interval) {
       return () => clearInterval(interval);
@@ -92,40 +102,30 @@ export default function Terminal() {
     });
     setInput("");
 
-    const response = await fetch("api/generate", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        prompt: input,
-        selected: currentSelectedValue.toLowerCase(),
-      }),
-    });
+    const payload = structurePayload(input, currentSelectedValue.toLowerCase());
 
-    // This data is a ReadableStream
-    const data = response.body;
-    console.log(`This test `, data);
+    let response: any = null;
+    try {
+      response = await fetch("http://localhost:3005/query/generate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          content: payload,
+          key: currentSelectedValue.toLowerCase(),
+          question: input,
+        }),
+      });
+    } catch (error) {
+      console.log(`Error: ${error}`);
+    }
+
+    const data = await response.json();
+
     if (!data) {
       return;
     }
-
-    const reader = data.getReader();
-    const decoder = new TextDecoder();
-    let done = false;
-    let resultData = "";
-
-    while (!done) {
-      const { value, done: doneReading } = await reader.read();
-      done = doneReading;
-      const chunkValue = decoder.decode(value);
-      resultData += chunkValue;
-    }
-    const latestValue = Array.from(selected).pop();
-
-    // these are the two values we care about
-    console.log(`Selected `, latestValue);
-    console.log(`Result data `, removeMarkdown(resultData));
 
     // trying to post to our backend
     /* try {
@@ -148,7 +148,7 @@ export default function Terminal() {
         ...prev,
         {
           type: responseType.answer,
-          content: removeMarkdown(resultData),
+          content: removeMarkdown(data.answer),
           id: currentSelectedValue.toLowerCase(),
         },
       ];
@@ -161,11 +161,40 @@ export default function Terminal() {
       if (typeof (window as any)._carbonads !== "undefined") {
         (window as any)._carbonads.refresh();
       }
-    }, 250);
+    }, 100);
+  };
+
+  const typingStyle = {
+    borderRight: "2px solid violet",
+    WhiteSpace: "pre-wrap",
+    color: "rgba(255, 255, 255, 0.8)",
+    fontSize: "1.4em",
+    fontFamily: "monospace",
+    overflow: "hidden",
+    clipPath: "inset(0 100% 0 0)",
+    animation: `typing 4s steps(${textLength}) infinite`,
   };
 
   return (
     <div className="relative z-10 mx-5 translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:200ms] xl:mx-0">
+      {popular && popular.length > 0 && (
+        <>
+          <div
+            style={{
+              display: "inline-block",
+              borderLeft: "10px solid rgba(128, 128, 128, 0.4)",
+              paddingLeft: "1em",
+              marginBottom: "1em",
+              animation: "blink-cursor 1s step-end infinite",
+            }}
+          >
+            <p className="monoSpace bg-gradient-to-r from-yellow to-yellow-400 bg-clip-text text-2xl text-base text-transparent">
+              your peers are searching...
+            </p>
+            <div style={typingStyle}>{popular}</div>
+          </div>
+        </>
+      )}
       <div className="relative z-10 m-auto w-full overflow-hidden rounded-lg border border-light/5 font-mono leading-normal subpixel-antialiased shadow-3xl xl:px-0">
         <div className="relative flex h-6 w-full items-center justify-center space-x-2 border-b border-slate bg-slate p-4">
           <div className="group absolute left-3 flex flex-1 space-x-2 justify-self-start">

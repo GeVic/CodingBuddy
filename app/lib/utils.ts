@@ -1,9 +1,4 @@
-import {
-  ParsedEvent,
-  ReconnectInterval,
-  createParser,
-} from "eventsource-parser";
-import { OpenAIStreamPayload } from "./definition";
+import { PayloadObject } from "./definition";
 
 export function capitalize(str: string) {
   if (!str || typeof str !== "string") return str;
@@ -15,64 +10,38 @@ export const truncate = (str: string, length: number) => {
   return `${str.slice(0, length)}...`;
 };
 
-export async function OpenAIStream(
-  payload: OpenAIStreamPayload,
-  selected: string,
-) {
-  const encoder = new TextEncoder();
-  const decoder = new TextDecoder();
+export const structurePayload = (prompt: string, selected: string) => {
+  if (!prompt) {
+    return "💬 Type a description to get the git command you need.";
+  }
 
-  let counter = 0;
+  if (
+    prompt.length >= 100 &&
+    selected!.toLowerCase() !== "format" &&
+    selected!.toLowerCase() !== "types"
+  ) {
+    return "🚨 The description is too large for the ChatGPT API. Try reducing the number of characters.";
+  }
 
-  const res = await fetch("https://api.openai.com/v1/chat/completions", {
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${process.env.OPENAI_API_KEY ?? ""}`,
-    },
-    method: "POST",
-    body: JSON.stringify(payload),
-  });
+  const payloadGit = `I want you to act as a Senior Frontend developer. I want you to only reply with git command the output inside one unique code block, and nothing else. Do not write explanations. Do not type commands unless. Give me the git command that would do the following: ${prompt}`;
+  const payloadLinux = `I want you to act as a Linux expert. I want you to only reply with linux command the output inside one unique code block, and nothing else. Do not write explanations. Do not type commands unless. Give me the linux command that would do the following: ${prompt}`;
+  const payloadMacOS = `I want you to act as a mac-os expert. I want you to only reply with mac-os command or keyboard shortcuts output inside one unique block, and nothing else. Do not write explanations. Do not type keyboard shortcuts unless. Give me mac-os command or the keyboard shortcuts that would do the following: ${prompt}`;
+  const payloadWindows = `I want you to act as a windows expert. I want you to only reply with windows command or keyboard shortcuts the output inside one unique block, and nothing else. Do not write explanations. Do not type commands or keyboard shortcuts unless. Give me the windows command or keyboard shortcuts that would do the following: ${prompt}`;
+  const payloadFormatObject = `I want you to act as a Senior Software developer. I want you to only reply with formatted code output inside one unique code block, and nothing else. Do not write explanations. Do not type formatted code unless. Give me the properly formatted object for the following: ${prompt}`;
+  const payloadGenType = `I want you to act as a Senior Software developer. I want you to only reply with typed code output inside one unique code block, and nothing else. Do not write explanations. Do not type typed code unless. Give me the types for the following: ${prompt}`;
+  const payloadWitty = `I want you to act as a Comdian. I want you to only reply with witty response output inside one unique code block, and nothing else. Do not write explanations. Do not type typed witty response unless. Give me the witty response for the following: ${prompt}`;
+  const payloadNames = `I want you to act as a Senior Software developer. I want you to only reply with suitable function or class or variable name output inside one unique code block, and nothing else. Do not write explanations. Do not type name unless. Give me the suitable name for the following: ${prompt}`;
 
-  const stream = new ReadableStream({
-    async start(controller) {
-      // callback
-      function onParse(event: ParsedEvent | ReconnectInterval) {
-        if (event.type === "event") {
-          const data = event.data;
-          // https://beta.openai.com/docs/api-reference/completions/create#completions/create-stream
-          if (data === "[DONE]") {
-            controller.close();
-            return;
-          }
-          try {
-            const json = JSON.parse(data);
-            const text = (json.choices[0].delta?.content || "").replace(
-              /^\n/,
-              "",
-            );
-            // if (counter < 2 && (text.match(/\n/) || []).length) {
-            //   // this is a prefix character (i.e., "\n\n"), do nothing
-            //   return;
-            // }
-            const queue = encoder.encode(text);
-            controller.enqueue(queue);
-            counter++;
-          } catch (e) {
-            // maybe parse error
-            controller.error(e);
-          }
-        }
-      }
+  const apiPayload: PayloadObject[] = [
+    { key: "git", payload: payloadGit },
+    { key: "funny", payload: payloadWitty },
+    { key: "format", payload: payloadFormatObject },
+    { key: "types", payload: payloadGenType },
+    { key: "names", payload: payloadNames },
+    { key: "linux", payload: payloadLinux },
+    { key: "macos", payload: payloadMacOS },
+    { key: "window", payload: payloadWindows },
+  ];
 
-      // stream response (SSE) from OpenAI may be fragmented into multiple chunks
-      // this ensures we properly read chunks and invoke an event for each SSE event stream
-      const parser = createParser(onParse);
-      // https://web.dev/streams/#asynchronous-iteration
-      for await (const chunk of res.body as any) {
-        parser.feed(decoder.decode(chunk));
-      }
-    },
-  });
-
-  return stream;
-}
+  return apiPayload.find((item) => item.key === selected)!.payload;
+};

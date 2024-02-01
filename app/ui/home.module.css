@@ -1,0 +1,9 @@
+.container {
+  padding: 5px;
+  transition: background-color 2s;
+  color: white;
+}
+
+.text {
+  margin-right: 0;
+}

@@ -19,7 +19,7 @@ export interface OpenAIStreamPayload {
 
 export type PayloadObject = {
   key: string;
-  payload: OpenAIStreamPayload; // Replace 'any' with the actual type of your payloads
+  payload: string; // Replace 'any' with the actual type of your payloads
 };
 
 export type MenuItem = {
