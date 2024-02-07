@@ -62,7 +62,7 @@ export default function Terminal() {
     const interval = setInterval(async () => {
       // calling read api from backend every 30s
       try {
-        const response = await fetch(`http://localhost:3005/query`, {
+        const response = await fetch(`https://codingbuddy.azurewebsites.net/query`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -106,7 +106,7 @@ export default function Terminal() {
 
     let response: any = null;
     try {
-      response = await fetch("http://localhost:3005/query/generate", {
+      response = await fetch("https://codingbuddy.azurewebsites.net/query/generate", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -117,6 +117,7 @@ export default function Terminal() {
           question: input,
         }),
       });
+      console.log({ response });
     } catch (error) {
       console.log(`Error: ${error}`);
     }
