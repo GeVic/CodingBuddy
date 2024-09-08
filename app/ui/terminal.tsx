@@ -62,12 +62,15 @@ export default function Terminal() {
     const interval = setInterval(async () => {
       // calling read api from backend every 30s
       try {
-        const response = await fetch(`https://codingbuddy.azurewebsites.net/query`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/query`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
           },
-        });
+        );
         const data = await response.json();
         setPopular(data.key);
         console.log(`Set is complete`, data.key);
@@ -106,17 +109,20 @@ export default function Terminal() {
 
     let response: any = null;
     try {
-      response = await fetch("https://codingbuddy.azurewebsites.net/query/generate", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/query/generate`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            content: payload,
+            key: currentSelectedValue.toLowerCase(),
+            question: input,
+          }),
         },
-        body: JSON.stringify({
-          content: payload,
-          key: currentSelectedValue.toLowerCase(),
-          question: input,
-        }),
-      });
+      );
       console.log({ response });
     } catch (error) {
       console.log(`Error: ${error}`);
