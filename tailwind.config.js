@@ -4,6 +4,8 @@ const plugin = require("tailwindcss/plugin");
 module.exports = {
   content: [
     "./app/**/*.{js,ts,jsx,tsx}",
+    "./app/components/**/*.{js,ts,jsx,tsx}",
+    "./app/styles/**/*.css",
   ],
   future: {
     hoverOnlyWhenSupported: true,
@@ -31,12 +33,16 @@ module.exports = {
         "yellow-400": "#EA9AFB",
       },
       fontFamily: {
-        display: ["var(--font-sf)", "system-ui", "sans-serif"],
+        display: ["var(--font-space-mono)", "monospace"],
         default: ["var(--font-inter)", "system-ui", "sans-serif"],
+        mono: ["var(--font-space-mono)", "monospace"],
+        sans: ["var(--font-inter)", "system-ui", "sans-serif"],
       },
       animation: {
         "slide-up-fade": "slide-up-fade 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
         "slide-down-fade": "slide-down-fade 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
+        "fade-in": "fade-in 1000ms var(--animation-delay, 0ms) ease forwards",
+        tiles: "tiles 600ms steps(4) infinite",
       },
       keyframes: {
         "fade-in": {
@@ -72,16 +78,11 @@ module.exports = {
       boxShadow: {
         "3xl": "0 0 60px 3px rgb(0 0 0 / 40%)",
       },
-      animation: {
-        "fade-in": "fade-in 1000ms var(--animation-delay, 0ms) ease forwards",
-        tiles: "tiles 600ms steps(4) infinite",
-      },
     },
   },
   plugins: [
     require("@tailwindcss/forms"),
     require("@tailwindcss/typography"),
-    require("@tailwindcss/line-clamp"),
     plugin(({ addVariant }) => {
       addVariant("radix-side-top", '&[data-side="top"]');
       addVariant("radix-side-bottom", '&[data-side="bottom"]');

@@ -1,11 +1,16 @@
+import React from "react";
+
 import { useEffect, useMemo, useRef, useState } from "react";
 
-import { Dropdown } from "@nextui-org/react";
 import { toast } from "react-hot-toast";
-import { Copy } from "@/app/ui/components/shared/icons";
-import { MenuItem } from "../lib/definition";
-import { structurePayload } from "../lib/utils";
-import styles from "@/app/ui/home.module.css";
+import { Copy } from "@/app/components/icons";
+import { MenuItem } from "@/app/types";
+import { structurePayload } from "@/app/utils";
+import { api, apiWithRetry } from "@/app/lib/api";
+
+import { BaseError, ValidationError } from "@/app/types/errors";
+import { TerminalError } from "@/app/components/components/ErrorMessage";
+import { ErrorHandler } from "@/app/utils/errorHandler";
 
 interface Response {
   type: string;
@@ -30,10 +35,12 @@ export default function Terminal() {
   const [responses, setResponses] = useState<Response[]>([]);
   const [popular, setPopular] = useState<string>("");
   const [textLength, setTextLength] = useState(0);
+  const [error, setError] = useState<BaseError | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const [sseConnected, setSseConnected] = useState(false);
+  const [activeConnections, setActiveConnections] = useState<number | null>(null);
   const menuItems: MenuItem[] = [
     { key: "git", name: "Git" },
-    { key: "funny", name: "Funny" },
     { key: "format", name: "Format" },
     { key: "types", name: "Types" },
     { key: "linux", name: "Linux" },
@@ -41,12 +48,27 @@ export default function Terminal() {
     { key: "window", name: "Windows" },
     { key: "names", name: "Naming" },
   ];
-  const [selected, setSelected] = useState<any>(new Set([menuItems[0].name]));
+  const [selected, setSelected] = useState<string>(menuItems[0].key);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const selectedValue = useMemo(
-    () => Array.from(selected).join(", ").replaceAll("_", " "),
+    () => menuItems.find(item => item.key === selected)?.name || menuItems[0].name,
     [selected],
   );
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   useEffect(() => {
     setInputFocus();
@@ -59,29 +81,43 @@ export default function Terminal() {
   }, [popular]);
 
   useEffect(() => {
-    const interval = setInterval(async () => {
-      // calling read api from backend every 30s
-      try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/query`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          },
-        );
-        const data = await response.json();
-        setPopular(data.key);
-        console.log(`Set is complete`, data.key);
-      } catch (error) {
-        console.log(`Error: ${error}`);
+    const unsubscribe = api.subscribeToLatestQuestion({
+      onQuestion: (data) => {
+        setPopular(data.value);
+      },
+      onConnect: () => {
+        setSseConnected(true);
+        console.log("Connected to live questions stream");
+      },
+      onError: (error) => {
+        setSseConnected(false);
+        console.error("SSE connection error:", error);
       }
-    }, 6000); // 60s interval
+    });
 
-    if (interval) {
-      return () => clearInterval(interval);
-    }
+    return unsubscribe;
+  }, []);
+
+  // Fetch active connections count
+  useEffect(() => {
+    const fetchConnections = async () => {
+      try {
+        const data = await api.getActiveConnection();
+        if (data && typeof data.activeConnections === 'number') {
+          setActiveConnections(data.activeConnections);
+        }
+      } catch (error) {
+        console.error("Failed to fetch active connections:", error);
+      }
+    };
+
+    // Initial fetch
+    fetchConnections();
+
+    // Poll every 30 seconds
+    const interval = setInterval(fetchConnections, 30000);
+
+    return () => clearInterval(interval);
   }, []);
 
   const setInputFocus = () => {
@@ -91,7 +127,18 @@ export default function Terminal() {
   };
 
   const generateCommand = async () => {
-    const currentSelectedValue = selectedValue;
+    const currentSelectedValue = selected;
+
+    // Clear any previous errors
+    setError(null);
+
+    // Validate input
+    if (!input.trim()) {
+      const validationError = new ValidationError("Please enter a command description");
+      setError(validationError);
+      return;
+    }
+
     setLoading(true);
     setResponses((prev) => {
       return [
@@ -99,53 +146,91 @@ export default function Terminal() {
         {
           type: responseType.question,
           content: "\n" + input,
-          id: currentSelectedValue.toLowerCase(),
+          id: currentSelectedValue,
         },
       ];
     });
+
+    const userInput = input;
     setInput("");
 
-    const payload = structurePayload(input, currentSelectedValue.toLowerCase());
+    const payload = structurePayload(userInput, currentSelectedValue);
 
-    let response: any = null;
-    try {
-      response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/query/generate`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
+    // Check for validation messages from structurePayload
+    if (payload.startsWith("💬") || payload.startsWith("🚨")) {
+      setResponses((prev) => {
+        return [
+          ...prev,
+          {
+            type: responseType.answer,
             content: payload,
-            key: currentSelectedValue.toLowerCase(),
-            question: input,
-          }),
-        },
-      );
-      console.log({ response });
-    } catch (error) {
-      console.log(`Error: ${error}`);
+            id: currentSelectedValue,
+          },
+        ];
+      });
+      setLoading(false);
+      setTimeout(() => setInputFocus(), 100);
+      return;
     }
 
-    const data = await response.json();
+    let data: any = null;
+    try {
+      data = await api.generateCommand({
+        content: payload,
+        key: currentSelectedValue,
+        question: userInput,
+      });
+    } catch (error) {
+      const normalizedError = ErrorHandler.normalizeError(error);
+      setError(normalizedError);
 
-    if (!data) {
+      // Add error to responses for terminal display
+      setResponses((prev) => {
+        return [
+          ...prev,
+          {
+            type: responseType.answer,
+            content: `error:${normalizedError.message}`,
+            id: currentSelectedValue,
+          },
+        ];
+      });
+
+      setLoading(false);
+      setTimeout(() => setInputFocus(), 100);
+      return;
+    }
+
+    if (!data || !data.answer) {
+      const emptyResponseError = new BaseError(
+        "No response generated. Please try again.",
+        500,
+        "EMPTY_RESPONSE"
+      );
+      setError(emptyResponseError);
+
+      setResponses((prev) => {
+        return [
+          ...prev,
+          {
+            type: responseType.answer,
+            content: `error:${emptyResponseError.message}`,
+            id: currentSelectedValue,
+          },
+        ];
+      });
+
+      setLoading(false);
+      setTimeout(() => setInputFocus(), 100);
       return;
     }
 
     // trying to post to our backend
     /* try {
-      const response = await fetch("http://localhost:3005/query", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          key: (latestValue as string).toLowerCase(),
-          value: removeMarkdown(resultData).toLowerCase(),
-        }),
-      });
+      await api.postQuery(
+        currentSelectedValue,
+        removeMarkdown(data.answer).toLowerCase()
+      );
     } catch (error) {
       console.log(`Error: ${error}`);
     } */
@@ -156,7 +241,7 @@ export default function Terminal() {
         {
           type: responseType.answer,
           content: removeMarkdown(data.answer),
-          id: currentSelectedValue.toLowerCase(),
+          id: currentSelectedValue,
         },
       ];
     });
@@ -184,21 +269,40 @@ export default function Terminal() {
 
   return (
     <div className="relative z-10 mx-5 translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:200ms] xl:mx-0">
-      {popular && popular.length > 0 && (
+      {sseConnected && popular && popular.length > 0 && (
         <>
           <div
+            className="mb-4 overflow-hidden rounded-lg border border-green-900/30 bg-black/40 p-4 font-mono backdrop-blur-sm"
             style={{
-              display: "inline-block",
-              borderLeft: "10px solid rgba(128, 128, 128, 0.4)",
-              paddingLeft: "1em",
-              marginBottom: "1em",
-              animation: "blink-cursor 1s step-end infinite",
+              boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.03)",
             }}
           >
-            <p className="monoSpace bg-gradient-to-r from-yellow to-yellow-400 bg-clip-text text-2xl text-base text-transparent">
-              your peers are searching...
-            </p>
-            <div style={typingStyle}>{popular}</div>
+            {/* Terminal-style header */}
+            <div className="mb-3 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="text-green-500">▶</span>
+                <span className="text-sm text-green-500/80">peers are searching...</span>
+              </div>
+              {activeConnections !== null && (
+                <div className="inline-flex items-center gap-1.5 align-middle">
+                  <span className="inline-block h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse flex-shrink-0"></span>
+                  <span className="text-xs text-green-500/60 leading-none">{activeConnections} online</span>
+                </div>
+              )}
+            </div>
+
+            {/* Popular text */}
+            <div className="relative pl-4">
+              <div
+                className="text-base text-light"
+                style={{
+                  fontFamily: "monospace",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {popular}
+              </div>
+            </div>
           </div>
         </>
       )}
@@ -209,46 +313,41 @@ export default function Terminal() {
             <div className="ml-2 h-3 w-3 rounded-full bg-orange-300"></div>
             <div className="ml-2 h-3 w-3 rounded-full bg-green-500"></div>
           </div>
-          <div className="group absolute right-3 flex">
-            <Dropdown disableAnimation>
-              <Dropdown.Button
-                flat
-                color="default"
-                css={{
-                  tt: "capitalize",
-                  color: "gray",
-                  background: "#17181D00",
-                  maxHeight: 30,
-                }}
+          <div className="group absolute right-3 flex" ref={dropdownRef}>
+            <button
+              className="flex items-center space-x-1 rounded px-2 py-1 font-mono text-sm text-gray transition-colors hover:bg-zinc/50 hover:text-light"
+              onClick={() => setDropdownOpen(!dropdownOpen)}
+            >
+              <span>{selectedValue}</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className={`h-3 w-3 transition-transform ${dropdownOpen ? 'rotate-180' : ''}`}
+                viewBox="0 0 20 20"
+                fill="currentColor"
               >
-                {selectedValue}
-              </Dropdown.Button>
-              <Dropdown.Menu
-                aria-label="Dynamic Actions"
-                items={menuItems}
-                disallowEmptySelection
-                selectionMode="single"
-                selectedKeys={selected}
-                onSelectionChange={setSelected}
-                css={{
-                  background: "slate",
-                }}
-              >
-                {(item: any) => (
-                  <Dropdown.Item
+                <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+              </svg>
+            </button>
+            {dropdownOpen && (
+              <div className="absolute right-0 top-full mt-1 min-w-[120px] rounded border border-zinc/20 bg-zinc py-1 shadow-lg">
+                {menuItems.map((item) => (
+                  <button
                     key={item.key}
-                    color={"default"}
-                    css={{
-                      color: "gray",
-                      fontFamily: "$mono",
+                    className={`block w-full px-3 py-1.5 text-left font-mono text-sm transition-colors ${
+                      selected === item.key
+                        ? 'bg-black-400 text-light'
+                        : 'text-gray hover:bg-black-400 hover:text-light'
+                    }`}
+                    onClick={() => {
+                      setSelected(item.key);
+                      setDropdownOpen(false);
                     }}
-                    className="hover:bg-black-400 focus:bg-black-400 focus:text-white"
                   >
                     {item.name}
-                  </Dropdown.Item>
-                )}
-              </Dropdown.Menu>
-            </Dropdown>
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 
@@ -272,6 +371,14 @@ export default function Terminal() {
                       <span className="w-4">-</span>
                     </span>
                   </span>
+                ) : item.type === responseType.answer && item.content.startsWith("error:") ? (
+                  <TerminalError
+                    error={new BaseError(
+                      item.content.replace("error:", ""),
+                      500,
+                      "COMMAND_ERROR"
+                    )}
+                  />
                 ) : item.type === responseType.answer ? (
                   <div className="inline-block">
                     {item.id === "format" || item.id === "types" ? (
@@ -319,7 +426,7 @@ export default function Terminal() {
                               }}
                             >
                               <Copy className="h-4 w-4 stroke-2 text-light" />
-                              <span className="monoSpace"> copy</span>
+                              <span className="font-mono"> copy</span>
                             </button>
                           )}
                         <br />
@@ -327,11 +434,12 @@ export default function Terminal() {
                       </pre>
                     ) : (
                       <>
-                        <span className="monoSpace text-gray">{"> "}</span>
+                        <span className="font-mono text-gray">{"> "}</span>
                         {item.content}
                         {item.content.length > 0 &&
                           !item.content.includes("💬") &&
-                          !item.content.includes("🚨") && (
+                          !item.content.includes("🚨") &&
+                          !item.content.startsWith("error:") && (
                             <button
                               className="ml-2 rounded-md bg-slate px-2 py-2 transition-all duration-75 ease-in hover:bg-black-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray"
                               onClick={() => {
@@ -395,7 +503,7 @@ export default function Terminal() {
               >
                 <input
                   ref={inputRef}
-                  className="monoSpace w-full bg-transparent pl-2.5 focus:outline-none focus:ring-0 focus:ring-offset-0"
+                  className="w-full bg-transparent pl-2.5 font-mono border-0 focus:outline-none focus:ring-0 focus:ring-offset-0"
                   value={input}
                   placeholder={
                     responses.length < 1

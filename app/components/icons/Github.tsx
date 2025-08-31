@@ -1,3 +1,5 @@
+import React from "react";
+
 export default function Github({ className }: { className?: string }) {
   return (
     <svg

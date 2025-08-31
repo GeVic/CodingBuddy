@@ -1,43 +1,40 @@
-<a href="https://codingbuddy.dev">
-  <img alt="CodingBuddy – Your best coding companion" src="https://codingbuddy.dev/api/og">
-  <h1 align="center">CodingBuddy</h1>
-</a>
+# CodingBuddy
 
-<p align="center">
-  <a href="#introduction"><strong>Introduction</strong></a> ·
-  <a href="#tech-stack--features"><strong>Tech Stack + Features</strong></a> ·
-</p>
-<br/>
+AI-powered coding assistant that helps you find solutions quickly without searching through multiple pages.
 
-## Introduction
+## Tech Stack
 
-CodingBuddy is an AI-driven solution that helps you quickly find the right solution for most of your coding needs without opening multiple pages.
+**Frontend:** Next.js, TypeScript, Tailwind CSS  
+**Backend:** Node.js (deployed on Render)  
+**Deployment:** Vercel (frontend), Render (backend)
 
-## Tech Stack + Features
+## Getting Started
 
-### Frameworks
+```bash
+# Install dependencies
+npm install
 
-- [Next.js](https://nextjs.org/) – React framework for building performant apps with the best developer experience
+# Set environment variable
+NEXT_PUBLIC_API_URL=your_backend_url
 
-### Platforms
+# Run development server
+npm run dev
+```
 
-- [Vercel](https://vercel.com/) – Easily preview & deploy changes with git
+Open [http://localhost:3000](http://localhost:3000)
 
-### UI
+## Environment Variables
 
-- [Tailwind CSS](https://tailwindcss.com/) – Utility-first CSS framework for rapid UI development
-- [Radix](https://www.radix-ui.com/) – Primitives like modal, popover, etc. to build a stellar user experience
-- [Lucide](https://lucide.dev/) – Beautifully simple, pixel-perfect icons
-- [`@next/font`](https://nextjs.org/docs/basic-features/font-optimization) – Optimize custom fonts and remove external network requests for improved performance
-- [`@vercel/og`](https://vercel.com/docs/concepts/functions/edge-functions/og-image-generation) – Generate dynamic Open Graph images on the edge
-- [`react-wrap-balancer`](https://github.com/shuding/react-wrap-balancer) – Simple React component that makes titles more readable
+Create `.env.local`:
+```
+NEXT_PUBLIC_API_URL=https://your-backend.onrender.com
+```
 
-### Code Quality
+## Deploy
 
-- [TypeScript](https://www.typescriptlang.org/) – Static type checker for end-to-end typesafety
-- [Prettier](https://prettier.io/) – Opinionated code formatter for consistent code style
-- [ESLint](https://eslint.org/) – Pluggable linter for Next.js and TypeScript
+- **Frontend:** Push to GitHub and connect with Vercel
+- **Backend:** Deploy to Render platform
 
-### Miscellaneous
+---
 
-- [Vercel Analytics](https://vercel.com/analytics) – Track unique visitors, pageviews, and more in a privacy-friendly way
+Live at [codingbuddy.dev](https://codingbuddy.dev)

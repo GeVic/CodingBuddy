@@ -1,3 +1,5 @@
+import React from "react";
+
 import Balancer from "react-wrap-balancer";
 
 export default function Privacy() {

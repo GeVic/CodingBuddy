@@ -1,4 +1,7 @@
-import { PayloadObject } from "./definition";
+import { PayloadObject } from "../types";
+
+// Re-export error handling utilities
+export * from "./errorHandler";
 
 export function capitalize(str: string) {
   if (!str || typeof str !== "string") return str;
@@ -29,12 +32,12 @@ export const structurePayload = (prompt: string, selected: string) => {
   const payloadWindows = `I want you to act as a windows expert. I want you to only reply with windows command or keyboard shortcuts the output inside one unique block, and nothing else. Do not write explanations. Do not type commands or keyboard shortcuts unless. Give me the windows command or keyboard shortcuts that would do the following: ${prompt}`;
   const payloadFormatObject = `I want you to act as a Senior Software developer. I want you to only reply with formatted code output inside one unique code block, and nothing else. Do not write explanations. Do not type formatted code unless. Give me the properly formatted object for the following: ${prompt}`;
   const payloadGenType = `I want you to act as a Senior Software developer. I want you to only reply with typed code output inside one unique code block, and nothing else. Do not write explanations. Do not type typed code unless. Give me the types for the following: ${prompt}`;
-  const payloadWitty = `I want you to act as a Comdian. I want you to only reply with witty response output inside one unique code block, and nothing else. Do not write explanations. Do not type typed witty response unless. Give me the witty response for the following: ${prompt}`;
+
   const payloadNames = `I want you to act as a Senior Software developer. I want you to only reply with suitable function or class or variable name output inside one unique code block, and nothing else. Do not write explanations. Do not type name unless. Give me the suitable name for the following: ${prompt}`;
 
   const apiPayload: PayloadObject[] = [
     { key: "git", payload: payloadGit },
-    { key: "funny", payload: payloadWitty },
+
     { key: "format", payload: payloadFormatObject },
     { key: "types", payload: payloadGenType },
     { key: "names", payload: payloadNames },
@@ -43,5 +46,6 @@ export const structurePayload = (prompt: string, selected: string) => {
     { key: "window", payload: payloadWindows },
   ];
 
-  return apiPayload.find((item) => item.key === selected)!.payload;
+  const match = apiPayload.find((item) => item.key === selected);
+  return (match ?? apiPayload[0]).payload;
 };

@@ -1,3 +1,5 @@
+import React from "react";
+
 import styles from "./loading-spinner.module.css";
 
 export default function LoadingSpinner() {

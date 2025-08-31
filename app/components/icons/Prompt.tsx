@@ -1,3 +1,5 @@
+import React from "react";
+
 export default function Prompt({ className }: { className?: string }) {
   return (
     <svg

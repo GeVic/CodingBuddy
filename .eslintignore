@@ -1,0 +1,14 @@
+# Node and Next.js build output
+node_modules/
+.next/
+out/
+dist/
+build/
+coverage/
+
+# TypeScript build info
+*.tsbuildinfo
+
+# Environment files
+.env*
+.vercel/

@@ -1,3 +1,5 @@
+import React from "react";
+
 export default function Keyboard({ className }: { className?: string }) {
   return (
     <svg

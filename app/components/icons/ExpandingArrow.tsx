@@ -1,3 +1,5 @@
+import React from "react";
+
 export default function ExpandingArrow({ className }: { className?: string }) {
   return (
     <div className="group relative flex items-center">

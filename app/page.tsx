@@ -1,11 +1,12 @@
 "use client";
 
-import { Copy, Keyboard, Prompt } from "@/app/ui/components/shared/icons";
+import React from "react";
+import { Copy, Keyboard, Prompt } from "@/app/components/icons";
 import classNames from "classnames";
 import { useRef } from "react";
 import { Toaster } from "react-hot-toast";
 import Balancer from "react-wrap-balancer";
-import Terminal from "./ui/terminal";
+import Terminal from "@/app/components/components/Terminal";
 
 export default function Page() {
   // Home
@@ -21,14 +22,14 @@ export default function Page() {
     <>
       <div className="max-w-3xl px-5 xl:px-0">
         <div className="mx-auto mb-5 flex max-w-fit translate-y-[-1rem] animate-fade-in items-center justify-center space-x-2 overflow-hidden rounded-full border border-light/20 bg-radial-gradient px-5 py-1 opacity-0">
-          <p className="monoSpace bg-gradient-to-r from-yellow to-yellow-400 bg-clip-text text-base text-transparent hover:from-yellow-400 hover:to-amber-400">
+          <p className="bg-gradient-to-r from-yellow to-yellow-400 bg-clip-text font-mono text-base text-transparent hover:from-yellow-400 hover:to-amber-400">
             Fast & Easy CodingBuddy
           </p>
         </div>
-        <h1 className="monoSpace translate-y-[-1rem] animate-fade-in bg-gradient-to-br from-light to-stone-300 bg-clip-text text-center font-display text-4xl font-bold text-transparent opacity-0 drop-shadow-sm [--animation-delay:100ms] md:text-7xl md:leading-[5rem]">
+        <h1 className="translate-y-[-1rem] animate-fade-in bg-gradient-to-br from-light to-stone-300 bg-clip-text text-center font-mono text-4xl font-bold text-transparent opacity-0 drop-shadow-sm [--animation-delay:100ms] md:text-7xl md:leading-[5rem]">
           <Balancer>Your best coding buddy!</Balancer>
         </h1>
-        <p className="monoSpace mt-6 translate-y-[-1rem] animate-fade-in text-center text-gray opacity-0 [--animation-delay:200ms] md:text-xl">
+        <p className="mt-6 translate-y-[-1rem] animate-fade-in text-center font-mono text-gray opacity-0 [--animation-delay:200ms] md:text-xl">
           <Balancer>
             An AI-driven solution that helps you code quickly. Get started with
             CodingBuddy today and save time.
@@ -39,7 +40,7 @@ export default function Page() {
             className="relative flex max-w-fit translate-y-[-1rem] animate-fade-in items-center justify-center rounded-md border border-yellow-400 bg-black-600 px-14 py-3 text-sm opacity-0 transition-colors [--animation-delay:300ms] hover:border-yellow-400 hover:bg-black-700"
             onClick={scrollToTerminal}
           >
-            <p className="monoSpace bg-gradient-to-r from-yellow to-yellow-400 bg-clip-text text-base text-transparent hover:from-yellow-400 hover:to-amber-400">
+            <p className="bg-gradient-to-r from-yellow to-yellow-400 bg-clip-text font-mono text-base text-transparent hover:from-yellow-400 hover:to-amber-400">
               npm start
             </p>
           </button>
@@ -67,7 +68,7 @@ export default function Page() {
           <div
             key={title}
             className={classNames(
-              "monoSpace mx-auto max-w-md bg-gradient-to-br text-center",
+              "mx-auto max-w-md bg-gradient-to-br text-center font-mono",
               `translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:${
                 index + 1
               }00ms]`,
